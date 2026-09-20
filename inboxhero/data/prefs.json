@@ -1,0 +1,20 @@
+{
+  "earliest_meeting": {
+    "key": "earliest_meeting",
+    "kind": "scheduling_window",
+    "value": "11:00",
+    "source_msg": "m041",
+    "stated_by": "sam@paperjet.io",
+    "recorded_at": "2026-09-20T12:36:33",
+    "description": "no meetings before 11:00"
+  },
+  "cc_on_legal": {
+    "key": "cc_on_legal",
+    "kind": "always_cc",
+    "value": "priya@paperjet.io|hartwell",
+    "source_msg": "m015",
+    "stated_by": "priya@paperjet.io",
+    "recorded_at": "2026-09-20T12:36:33",
+    "description": "always CC priya@paperjet.io on mail from Hartwell & Cho"
+  }
+}
