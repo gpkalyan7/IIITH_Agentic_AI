@@ -1,6 +1,6 @@
 # CAPABILITIES.md — inboxHero
 
-**Student:** G P Kalyan, evernorth-aai-1200014
+**Student:** Pavan Kalyan Gurram, evernorth-aai-1200014
 **Repository:** https://github.com/gpkalyan7/IIITH_Agentic_AI
 
 Run everything through one entry point:
