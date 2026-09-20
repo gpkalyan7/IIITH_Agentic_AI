@@ -1,0 +1,12 @@
+# Secrets. .env.example is committed; .env never is.
+.env
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.DS_Store
+
+# Cached model responses: reproducible, but not source.
+data/llm_cache/
