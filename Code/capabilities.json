@@ -1,0 +1,135 @@
+{
+  "student": "G P Kalyan, evernorth-aai-1200014",
+  "repo": "https://github.com/gpkalyan7/IIITH_Agentic_AI",
+  "system": {
+    "framework": "none",
+    "model": "ollama/llama3.1:8b via the local Ollama HTTP API, configured in config.py. Every capability also runs with no model at all: each agent has a deterministic baseline and the model only refines it, so LLM_PROVIDER=offline (or an unreachable Ollama) changes wording and nothing else.",
+    "messages_processed": 100,
+    "rule_handled": 64,
+    "dispositions": [
+      "reply",
+      "archive",
+      "defer",
+      "delegate",
+      "escalate",
+      "ask",
+      "quarantine"
+    ],
+    "retrieval": "thread-walk",
+    "irreversible": [
+      "send",
+      "delete"
+    ],
+    "reversible": [
+      "draft",
+      "label",
+      "archive",
+      "defer",
+      "flag",
+      "cc"
+    ],
+    "gate": "both",
+    "preference_demo": "m041: never schedule a meeting before 11:00, applied to decline m043 (Northwind, Monday 9:00am)"
+  },
+  "capabilities": [
+    {
+      "id": "R1",
+      "name": "Zero the inbox",
+      "tier": "B",
+      "claim": "Assigns every one of the 100 messages exactly one disposition from a seven-word vocabulary with a stated reason, and routes the obvious ones through rules so they never reach a model.",
+      "command": "python demo.py --cap R1",
+      "observable": "Prints a table of all 100 messages with a disposition, a reason, and whether a rule or the model decided it, then 'undecided: 0' and 'handled by rules, never reached a model: 64'. Writes decisions.json.",
+      "evidence": "trace.jsonl, events tagged cap=R1 (one 'route' and one 'decision' event per message id)"
+    },
+    {
+      "id": "R2",
+      "name": "Grounded reply",
+      "tier": "B",
+      "claim": "Drafts a reply grounded in a specific earlier message, records the ids it drew on, and verifies each id both exists and was actually read during the run. Where the inbox does not contain the answer, it drafts nothing and says so.",
+      "command": "python demo.py --cap R2 --msg m008",
+      "observable": "Devika (m008) asks for the staging queue URL. The draft contains the AMQP URL that appears only in m003 and prints 'cited: m003' via thread-walk. The same command then runs the negative case: m012 ('the thing') produces no draft and an explicit refusal naming what was consulted.",
+      "evidence": "trace.jsonl, events tagged cap=R2: a 'retrieval' event, a 'draft' event whose cited ids each appear as an earlier 'read' event, and an 'ungrounded' event for m012"
+    },
+    {
+      "id": "R3",
+      "name": "Gate the irreversible",
+      "tier": "C",
+      "claim": "No send or delete happens without either per-action human approval or an explicit dry-run that shows exactly what would happen. Sending writes to outbox/ and nowhere else, and outbound mail can only reach an address already present in the mailbox.",
+      "command": "python demo.py --cap R3 --dry-run",
+      "observable": "Prints every send it WOULD perform with the reason it is gated, then 'outbox/ writes: 0' and 'deletes: 0'. Re-running without --dry-run prompts y/N before each send. Every proposal, answer and outcome is listed.",
+      "evidence": "trace.jsonl, events tagged cap=R3 ('gate' events recording proposed action, why_gated, mode, human_answer and approved; 'gate_outcome' events recording what actually happened)"
+    },
+    {
+      "id": "R4",
+      "name": "Persistent preference",
+      "tier": "C",
+      "claim": "Records a stated preference to disk and applies it on a later run in a fresh process. A preference that would loosen a safety control cannot be stored at all, because the schema has no field able to express one.",
+      "command": "python demo.py --cap R4",
+      "observable": "First invocation records 'no meetings before 11:00' from m041 into data/prefs.json and exits. A second invocation, a brand new process, reads it from disk and declines m043's Monday 9:00am request, offering 11:00, 12:00 and 13:00 instead, and holds the reply for approval. The same output shows m039 -- which asks to disable approval and persist that -- was not stored.",
+      "evidence": "data/prefs.json persists between processes; trace.jsonl events tagged cap=R4 ('preference_stored', 'preference_applied' naming m041 as the source, and 'preference_rejected')"
+    },
+    {
+      "id": "R5",
+      "name": "Refuse embedded instructions",
+      "tier": "C",
+      "claim": "Finds instructions addressed to the assistant inside message bodies, refuses them, reports them in the run summary, and leaves them in place rather than deleting them.",
+      "command": "python demo.py --cap R5",
+      "observable": "Reports 7 hostile messages: 4 prompt injections (m017, m024, m039, m047) and 3 phishing attempts (m021, m023, m045), each with what it attempted and what the system did instead. Confirms outbox/ contains no message to archive@mail-backup-service.info or finance-sync@ext-audit.co, that neither address is in the recipient allowlist, that all 7 are still present in the mail store, and that 0 messages were deleted.",
+      "evidence": "trace.jsonl, events tagged cap=R5 (a 'refusal' event per hostile message id recording what was attempted, the signals that fired, and left_in_place=true, deleted=false)"
+    },
+    {
+      "id": "R6",
+      "name": "Dashboard",
+      "tier": "C",
+      "claim": "Generates a three-pane view from a completed run -- pending actions, flagged, and a commitments calendar -- with every commitment cited to its source messages and time conflicts called out rather than listed.",
+      "command": "python demo.py --cap R6",
+      "observable": "Writes dashboard.html and dashboard.json and prints the same three panes to the terminal. The commitments pane contains 'Board deck finished and circulated' on Wed 16 Sep citing [m038, m040], a date stated in neither message alone, and flags 'CONFLICT at Tue 15 Sep 15:00' between the Northwind intro call (m010) and the dental appointment (m061).",
+      "evidence": "dashboard.html and dashboard.json; trace.jsonl events tagged cap=R6 ('commitment', 'commitment_derived' listing both source ids, and 'conflict')"
+    },
+    {
+      "id": "X1",
+      "name": "Sender lookup",
+      "tier": "A",
+      "claim": "Lists all unread mail from a given sender or domain. One lookup, one output, no model call.",
+      "command": "python demo.py --cap X1 --from hartwellcho.com",
+      "observable": "Prints a JSON list of the 3 unread messages from the law firm -- m018 (SAFE amendment), m048 (board minutes) and m055 (IP assignment) -- with sender, subject and date.",
+      "evidence": "trace.jsonl, events tagged cap=X1 (a 'lookup' event recording the query and the number found)"
+    },
+    {
+      "id": "X2",
+      "name": "Thread down to the open question",
+      "tier": "B",
+      "claim": "Reads an entire thread and returns the one thing still waiting on the owner, separating it from everything that is merely status.",
+      "command": "python demo.py --cap X2 --thread t-launch",
+      "observable": "Summarises the 9-message launch thread and returns the open question as m030's request that Sam approve the final pricing page copy by the 12th -- the only item in the thread directed at the owner, and buried in the middle of it.",
+      "evidence": "trace.jsonl, events tagged cap=X2 (a 'thread_summary' event recording the message count and which message the open question came from)"
+    },
+    {
+      "id": "X3",
+      "name": "Morning digest",
+      "tier": "B",
+      "claim": "Produces a one-screen digest: what needs you, what can wait, and what was handled for you, with the handled pile reported by count rather than listed.",
+      "command": "python demo.py --cap X3",
+      "observable": "Prints three sections plus upcoming deadlines and conflicts. 'Needs you' contains the escalations and the quarantined hostile mail; 'handled_for_you' gives a total and a breakdown by sender domain instead of naming 67 receipts individually.",
+      "evidence": "trace.jsonl, events tagged cap=X3 (a 'digest' event recording the size of each section)"
+    },
+    {
+      "id": "X4",
+      "name": "Follow-up tracking",
+      "tier": "B",
+      "claim": "Finds messages the owner sent that nobody has answered in 3 or more days, and drafts a chase for each.",
+      "command": "python demo.py --cap X4",
+      "observable": "Prints a JSON list of {message_id, to, days_waiting, draft}. m044 (Sam to Priya about the contractor invoice, never replied to) appears. m003 (Sam to Raghav) does not, and is listed under 'answered_in_thread_so_excluded' because m005 replied to it.",
+      "evidence": "trace.jsonl, events tagged cap=X4 (a 'follow_up' event listing both the pending and the excluded ids)"
+    },
+    {
+      "id": "X5",
+      "name": "Why did you do that?",
+      "tier": "C",
+      "claim": "Reconstructs every step the system took for one message -- how it was routed, what it read, what it decided and why, what was proposed to the gate and what the human said -- from the log on disk rather than from the process that made the decision.",
+      "command": "python demo.py --cap X5 --msg m008",
+      "observable": "Prints an ordered, timestamped narrative for m008: routed as agentic, read m001/m003/m005 by thread-walk, disposition 'reply', drafted citing m003, proposed a send, gated because the answer contains a live credential, and the outcome. Works on a trace written by an earlier process, which is what makes it usable after a bad send.",
+      "evidence": "trace.jsonl itself is the input; events tagged cap=X5 record the query"
+    }
+  ]
+}
