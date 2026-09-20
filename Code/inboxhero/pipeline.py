@@ -101,7 +101,15 @@ def run(
     cap: str | None = None,
     use_model: bool = True,
     send_approved: bool = True,
+    propose_actions: bool = True,
 ) -> RunResult:
+    """Run the pipeline.
+
+    `propose_actions=False` stops after classification. Capabilities that only
+    need to know what each message *is* -- R1, R4, X3 -- have no business
+    drafting replies or putting proposals to the gate, and must not interrupt
+    the user to ask about a send they never requested.
+    """
     result = RunResult(llm_status=client.status())
 
     # 1. Route everything before spending anything.
@@ -145,6 +153,16 @@ def run(
             continue
         msg = decision.msg
         disposition = by_id[msg.id].disposition
+
+        # Anything the owner must decide personally is pending regardless of
+        # whether this run proposes actions: it is a fact about the message,
+        # not something the system wants to do.
+        if not propose_actions:
+            if disposition in ("escalate", "ask"):
+                result.pending.append(
+                    PendingAction(msg.id, "await the owner", f"{msg.subject} -- from {msg.sender}", by_id[msg.id].reason)
+                )
+            continue
 
         if scheduler.is_scheduling_request(msg):
             check = scheduler.check(msg, prefs, result.calendar, cap=cap)

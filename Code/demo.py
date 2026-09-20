@@ -67,7 +67,7 @@ class Session:
         self.client = LLMClient(self.cfg)
         self.args = args
 
-    def run_pipeline(self, cap: str, *, send: bool = True):
+    def run_pipeline(self, cap: str, *, send: bool = True, propose_actions: bool = True):
         return pipeline.run(
             store=self.store,
             prefs=self.prefs,
@@ -79,6 +79,7 @@ class Session:
             cap=cap,
             use_model=not self.args.no_model,
             send_approved=send,
+            propose_actions=propose_actions,
         )
 
 
@@ -87,7 +88,9 @@ class Session:
 
 def cap_R1(session) -> None:
     banner("R1", "Zero the inbox -- a disposition and a reason for every message")
-    result = session.run_pipeline("R1", send=False)
+    # Classification only. R1 answers "what is each message", so it neither
+    # drafts nor proposes anything, and never asks the user to approve a thing.
+    result = session.run_pipeline("R1", propose_actions=False)
     print(f"model: {result.llm_status}\n")
     print(f"{'id':6} {'disposition':12} {'by':6} reason")
     print("-" * 78)
@@ -184,7 +187,8 @@ def cap_R4(session) -> None:
     else:
         print("no preferences on disk yet; this run will record them")
 
-    result = session.run_pipeline("R4", send=False)
+    # Recording and applying preferences, not sending anything.
+    result = session.run_pipeline("R4", propose_actions=False)
     print()
     for line in result.preferences_recorded:
         print(f"  recorded: {line}")
@@ -240,6 +244,11 @@ def cap_R5(session) -> None:
 
 def cap_R6(session) -> None:
     banner("R6", "Dashboard -- pending actions, flagged, commitments")
+    # The dashboard *reports* what the system wants to do; producing it must
+    # not be the moment the user is asked to approve any of it. Forcing
+    # dry-run means every proposal is recorded as pending, which is exactly
+    # what pane 1 is for, and nothing is performed or prompted for.
+    session.gate.dry_run = True
     result = session.run_pipeline("R6", send=False)
     data = dashboard.build(result, session.store, session.prefs, session.toolbox)
     dashboard.write(data, config.DASHBOARD_HTML, config.DASHBOARD_JSON)
@@ -262,7 +271,7 @@ def cap_X2(session, thread: str = "t-launch") -> None:
 
 def cap_X3(session) -> None:
     banner("X3", "Morning digest -- needs you / can wait / handled for you")
-    result = session.run_pipeline("X3", send=False)
+    result = session.run_pipeline("X3", propose_actions=False)
     dump(extras.digest(result, session.store, cap="X3"))
 
 

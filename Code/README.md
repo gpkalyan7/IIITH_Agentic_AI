@@ -2,7 +2,7 @@
 
 **Repository: https://github.com/gpkalyan7/IIITH_Agentic_AI**
 
-G P Kalyan — evernorth-aai-1200014
+Gurram Pavan Kalyan — evernorth-aai-1200014
 Assignment 6, Agentic AI: From Concepts to Practice, IIIT Hyderabad
 
 An agentic system that takes a 100-message inbox from unread to empty by
