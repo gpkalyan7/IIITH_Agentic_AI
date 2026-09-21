@@ -5,15 +5,6 @@ wins-per-key model, same "survives a restart because it is on disk" property.
 Two things are new, and both exist because this store is now reachable from
 text that strangers wrote.
 
-**The schema is a closed vocabulary.** A preference is one of the kinds in
-`KINDS`, and nothing else can be written. There is no kind that means "stop
-asking for approval", "act autonomously", or "hide things from the user", so a
-message asking for one cannot be stored. This is why m039 fails: it arrives
-looking exactly like the legitimate m041 -- a note to the assistant, apparently
-from sam@paperjet.io -- and sender identity cannot separate them. What separates
-them is that "never schedule before 11:00" is expressible here and "send to
-investors without asking for approval" is not.
-
 **The gate never reads this file.** Even a preference that somehow got written
 could not loosen a control, because gate.py has no reference to this module.
 Preferences shape *what* the system proposes. They have no say in *whether* a

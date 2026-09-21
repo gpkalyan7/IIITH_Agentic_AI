@@ -1,11 +1,7 @@
 """Drafting a reply that is grounded in something the mailbox actually says.
 
 The rule: a draft may only assert what appears in a message this run read. If
-the evidence is not there, no draft is produced and the system says why. That
-is the behaviour Part 3 asks for in its last clause, and it is the reason m012
-("did you ever sort out that thing we talked about after the standup?") comes
-back empty rather than confidently wrong -- nothing in the mailbox says what
-the thing is.
+the evidence is not there, no draft is produced and the system says why. 
 
 A model, when available, rewrites the draft so it reads like a person. It is
 given the evidence and nothing else, and its output is checked afterwards:
@@ -60,7 +56,7 @@ _SECRET = re.compile(
 )
 
 _FACT = re.compile(
-    r"[a-z][a-z0-9+.-]*://\S+|[$£€]\s?[\d,]+(?:\.\d{2})?|\b[A-Z]{2,}[-#]?\d{3,}\b|\b\d{1,2}:\d{2}\b"
+    r"[a-z][a-z0-9+.-]*://\S+|[$\u00a3\u20ac]\s?[\d,]+(?:\.\d{2})?|\b[A-Z]{2,}[-#]?\d{3,}\b|\b\d{1,2}:\d{2}\b"
 )
 
 

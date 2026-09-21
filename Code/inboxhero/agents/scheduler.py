@@ -6,7 +6,7 @@ not take meetings before 11:00am, ever" and is recorded once. On any later run
 Monday at 9:00am, and the system declines it, offers times that satisfy the
 preference, and holds the reply for approval rather than sending it.
 
-Nothing about that path trusts m043. The preference was read from prefs.json,
+The preference was read from prefs.json,
 the alternatives are computed here, and the reply still has to pass the gate.
 """
 

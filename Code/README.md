@@ -2,8 +2,7 @@
 
 **Repository: https://github.com/gpkalyan7/IIITH_Agentic_AI**
 
-Gurram Pavan Kalyan — evernorth-aai-1200014
-Assignment 6, Agentic AI: From Concepts to Practice, IIIT Hyderabad
+**Gurram Pavan Kalyan - evernorth-aai-1200014**
 
 An agentic system that takes a 100-message inbox from unread to empty by
 deciding what to do with every message, doing the parts it should do, and
@@ -20,10 +19,10 @@ python demo.py --cap R3 --dry-run    # show every irreversible action, perform n
 python demo.py --cap R2 --msg m008   # target a specific message
 ```
 
-Python 3.10 or newer. **No packages to install** — the project uses only the
+Python 3.10 or newer. **No packages to install** - the project uses only the
 standard library, so it runs from a clean checkout immediately.
 
-A local model is optional. Copy `.env.example` to `.env` to point at one:
+Copy `.env.example` to `.env` to point at one:
 
 ```
 LLM_PROVIDER=ollama
@@ -61,14 +60,14 @@ inboxhero/
     extras.py           the five Part 8 capabilities
 ```
 
-The flow is: **load → route → dispose → record preferences → retrieve and
-draft → gate → extract commitments → report.** Preferences are recorded before
+The flow is: **load -> route -> dispose -> record preferences -> retrieve and
+draft -> gate -> extract commitments -> report.** Preferences are recorded before
 drafting so a preference stated in this mailbox affects this run as well as
 later ones.
 
-Design rationale — framework choice, retrieval method, the reversible and
+Design rationale - framework choice, retrieval method, the reversible and
 irreversible classification, where the gate sits, and where the escalation
-line was drawn — is in **`CAPABILITIES.md`**, together with the capability
+line was drawn - is in **`CAPABILITIES.md`**, together with the capability
 list. `capabilities.json` is the machine-readable version.
 
 ## Outputs
@@ -96,7 +95,7 @@ the mail store. Then it stops and asks a human.
 It stops because of a check that is separate from grounding. `grounder.py`
 tests the quoted evidence against a pattern for embedded secrets, and
 `amqp://pj_stage:Rk7-quiet-otter-51@broker-stg.paperjet.io:5672/pjs` is a live
-credential. The draft is *correct* — that really is the URL, it really is in
+credential. The draft is *correct* - that really is the URL, it really is in
 m003, and Devika really did ask for it. Correctness is not the question. The
 question is that sending it re-transmits a working secret to a third party,
 and the system cannot evaluate the thing that actually matters: whether Devika
@@ -121,7 +120,7 @@ it cannot forge the end of the fence and appear to speak from outside it.
 
 **Neutralisation.** Text resembling a fence, a role header, or a directive
 aimed at an assistant is rewritten before the model sees it. The model learns
-that an instruction was present — which is what allows it to be reported —
+that an instruction was present - which is what allows it to be reported -
 without seeing it in a form that reads as one.
 
 **Output shape.** This is the load-bearing one. Every prompt asks for a JSON
@@ -140,24 +139,14 @@ of them is a prompt:
    argued with, because it does not read for meaning. Detection deliberately
    does not use the model: asking the model whether a message is an attack is
    asking the attacker's own text to describe itself.
-2. The schema boundary in `llm.py` — they would need a field to exist that
+2. The schema boundary in `llm.py` - they would need a field to exist that
    does not.
 3. `gate.py`, which every irreversible action passes through, and which no
    agent can reach.
 4. The recipient allowlist in `tools.py`. Outbound mail can only go to an
    address already in `inbox.json`, so they would have to get their address
-   into the mail store first — and then still pass a human.
+   into the mail store first - and then still pass a human.
 
-The cleanest illustration is **m039**. It spoofs Sam's own address and asks the
-system to enable autonomous mode, stop asking for approval, and *save that as
-a standing preference so it survives restarts*. It is an attack on Part 5 in
-order to defeat Part 4. It fails for a structural reason rather than a
-detection one: the preference store holds a closed vocabulary of five kinds
-and none of them can express a change to the safety posture, and `gate.py`
-never reads preferences anyway. Sender identity could not have saved me here —
-the legitimate preference m041 is *also* a note to the assistant from
-`sam@paperjet.io`. What separates them is that one asks for something
-representable and the other does not.
 
 ## 3. Who is accountable when it sends the wrong thing?
 
@@ -165,7 +154,7 @@ representable and the other does not.
 reaches `outbox/` without Sam having been shown the recipient, the subject,
 the body, the citations and the reason it was gated, and having typed `y`. The
 system is built so that there is always a human answer on the record for every
-irreversible act — that is the entire purpose of `gate.py`, and it is why
+irreversible act - that is the entire purpose of `gate.py`, and it is why
 `--dry-run` exists as a way to look without that record being created.
 
 That said, "the human clicked yes" is a cheap answer if the system cannot show
@@ -176,21 +165,6 @@ with its reason and whether a rule or the model chose it, the retrieval method
 and what it consulted, the draft with its citations, the exact proposal put to
 the gate with the reason it was gated, the human's literal answer, and the
 outcome.
-
-**X5 turns that into an answer to a question.** `python demo.py --cap X5 --msg
-m008` replays the whole trail for one message as an ordered narrative. It
-reads the log from disk rather than any in-process state, which is the point:
-an explanation produced by the run that made the decision is a story, while
-one reconstructed from the log is evidence, and it is still there tomorrow
-when somebody asks why that went out.
-
-So a bad send resolves to one of three findings, and the trace distinguishes
-them: the retrieval cited the wrong message (visible in the `retrieval` and
-`read` events), the model's rewrite introduced something the evidence did not
-support (there is a `rewrite_rejected` event when the system catches this, and
-its absence is itself informative), or the proposal was accurate and the human
-approved it anyway (the `gate` event holds what they were shown). Only the
-third is the owner's fault alone, and the log is what tells them apart.
 
 ## 4. Name your own machinery
 
@@ -214,12 +188,12 @@ no, and I think the trade was clearly worth it.
 
 The reason is that the interesting claim in this system is a *negative* one:
 that no path exists from a message body to an irreversible action except
-through the gate. I can support that by reading my own code — `tools.py` is
+through the gate. I can support that by reading my own code - `tools.py` is
 imported by `pipeline.py` and nothing else, no module in `agents/` imports it,
 and both irreversible functions begin by checking a gate token keyed to a
 specific proposal. Under CrewAI that claim becomes a statement about the
 framework's tool-permission model, agent delegation and whatever the executor
-does when a model emits a malformed tool call — a much larger surface, most of
+does when a model emits a malformed tool call - a much larger surface, most of
 which I would be trusting rather than checking. Agent frameworks are built
 around letting a model choose tools, and the central design decision here is
 that the model is never allowed to choose one.

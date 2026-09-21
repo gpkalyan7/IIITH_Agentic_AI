@@ -3,15 +3,9 @@
 Two jobs, both done before any model is consulted.
 
 *Cheap mail.* Receipts, newsletters and service notifications are recognised by
-sender shape and subject pattern. Recognising a Spotify receipt does not need a
-language model, and paying for one to do it is the mistake the brief warns
-about. These messages get their disposition here and never enter a prompt.
+sender shape and subject pattern. These messages get their disposition here and never enter a prompt.
 
 *Hostile mail.* Injections and phishing are caught by rule too, deliberately.
-A detector that depends on the model is a detector an attacker can talk their
-way past, because the attacker controls the text the model is reading. Rules
-are not smarter than the model, but they cannot be persuaded.
-
 The model's view of a hostile message is advisory only: it can raise a
 suspicion the rules missed, but it cannot clear one the rules raised.
 """

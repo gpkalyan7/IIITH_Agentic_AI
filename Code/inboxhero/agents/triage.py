@@ -10,13 +10,6 @@ The vocabulary, and what each one commits the system to:
   ask         the system cannot tell what is being asked and will not guess
   quarantine  hostile: flagged, reported, left in place, never acted on
 
-`ask` and `quarantine` are additions to the classic five and both earn their
-place. Without `ask`, a message like m012 ("did you ever sort out that thing
-we talked about after the standup?") has to be forced into `reply`, and a
-system that must reply will invent what the thing was. Without `quarantine`,
-refusing a hostile message means archiving it, which hides it -- and Part 6
-requires it be flagged and left where the owner can see it.
-
 A deterministic baseline assigns all 100. The model is then offered the
 message and may change the disposition within the vocabulary and improve the
 reason. It cannot introduce a disposition that does not exist, and it is never

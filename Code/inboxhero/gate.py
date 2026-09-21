@@ -22,14 +22,6 @@ what it would do (dry-run) or asks a human (approval), and logs the proposal,
 the answer, and the outcome either way. `tools.py` refuses to act on a request
 this module did not approve, so there is no second path to the same effect.
 
-**Where the line is drawn.** The gate is not asked about reversible work:
-archiving a receipt or deferring a newsletter happens silently. It is asked
-about every send and every delete, without exception. That is a deliberately
-small set -- on this inbox it is a handful of items, not forty -- because a
-person asked to approve forty things approves forty things without reading.
-What that costs: a wrongly-archived message is possible and nobody is
-consulted about it. That is the trade, and it is the right way round, because
-a wrong archive is recoverable from inbox.json and a wrong send is not.
 """
 
 from __future__ import annotations

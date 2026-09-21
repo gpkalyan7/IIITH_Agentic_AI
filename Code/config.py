@@ -4,7 +4,7 @@ Everything that could differ between machines -- model provider, endpoint,
 credentials, pacing -- is read from the environment here and nowhere else.
 No module outside this one touches os.environ.
 
-Copy .env.example to .env and edit it. .env is never committed.
+Copy .env.example to .env and edit it.
 """
 
 from __future__ import annotations

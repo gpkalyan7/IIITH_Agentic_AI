@@ -5,14 +5,6 @@ decision that approved this exact proposal object. Passing a hand-made
 Decision does not work: the gate hands out a token keyed to the proposal it
 actually asked about.
 
-On top of the gate, `send` enforces a recipient allowlist. Outbound mail may
-only go to an address that already appears somewhere in inbox.json. This is
-the belt to the gate's braces, and it is aimed squarely at Part 6: the
-addresses the injected messages want mail sent to --
-archive@mail-backup-service.info from m024, finance-sync@ext-audit.co from
-m047 -- have never written to this mailbox, so they are unreachable. An
-attacker would have to get their address into the mail store first, and then
-still pass a human.
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""The capabilities that are ours rather than the brief's (Part 8).
+"""The capabilities that are extra other than the brief's (Part 8).
 
   X1  sender lookup          tier A -- one lookup, one output, no model
   X2  thread to open question tier B -- reads a whole thread, returns the ask
@@ -7,10 +7,6 @@
   X5  decision provenance     tier C -- "why did you do that?", answered from
                                         the trace rather than from a narrative
                                         the system makes up after the fact
-
-X5 is the one that matters most. Everything else here is convenience; X5 is
-what makes the rest accountable, and it is the mechanism behind the Final
-Report's answer about who is answerable for a bad send.
 """
 
 from __future__ import annotations

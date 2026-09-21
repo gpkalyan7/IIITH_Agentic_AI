@@ -6,11 +6,7 @@ Three things this has to do beyond finding dates.
 are checked against the trace the same way a draft's citations are.
 
 *Resolve across messages.* Some commitments do not exist in any single
-message. The board deck is the example: m040 says "finished and circulated two
-days before the board review" and never says when that is, while m038 says the
-review is on the 18th and never mentions the deck. Neither message contains
-the commitment; it only exists once both are read, and it resolves to the
-16th, citing both.
+message. 
 
 *Surface conflicts, not just list them.* Two things at the same time is a
 finding, not a row. It is reported separately and loudly.

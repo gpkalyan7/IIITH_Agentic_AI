@@ -71,7 +71,7 @@ _ANSWER_SHAPES: list[tuple[str, re.Pattern[str]]] = [
     ("url", re.compile(r"\b[a-z][a-z0-9+.-]*://\S+", re.IGNORECASE)),
     ("date", re.compile(r"\b(?:the\s+)?\d{1,2}(?:st|nd|rd|th)?\b|\b(?:mon|tues|wednes|thurs|fri|satur|sun)day\b", re.IGNORECASE)),
     ("time", re.compile(r"\b\d{1,2}(?::\d{2})?\s*(?:am|pm)\b", re.IGNORECASE)),
-    ("money", re.compile(r"[$£€]\s?[\d,]+(?:\.\d{2})?")),
+    ("money", re.compile(r"[$\u00a3\u20ac]\s?[\d,]+(?:\.\d{2})?")),
     ("case-ref", re.compile(r"\b[A-Z]{2,}[-#]?\d{3,}\b")),
 ]
 

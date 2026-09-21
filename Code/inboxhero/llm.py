@@ -15,10 +15,6 @@ baseline stands and the run completes. No safety property -- what gets gated,
 refused, or flagged -- is decided by the model, so losing it degrades quality
 and nothing else.
 
-*Free tiers are survivable.* Calls are paced, retried with exponential backoff
-on 429 and 5xx, and cached on disk by prompt hash so re-running a capability
-costs nothing and produces the same output for a marker as it did for me.
-
 Standard library only: no dependency needs installing for this to run.
 """
 

@@ -1,6 +1,1 @@
-# inboxHero has no third-party dependencies.
-#
-# The model client in inboxhero/llm.py speaks HTTP over urllib from the
-# standard library rather than requests, so the project runs from a clean
-# checkout on Python 3.10+ with nothing installed. This file exists so that
-# `pip install -r requirements.txt` succeeds and does nothing.
+requests

@@ -1,7 +1,6 @@
 """inboxHero: an agentic system that takes an inbox from unread to empty.
 
-The package is deliberately flat and readable. Roles a framework would name
-for you are named here instead:
+The package is deliberately flat and readable.
 
   router.py            the router
   agents/              the agents, one file per job

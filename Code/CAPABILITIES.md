@@ -1,6 +1,7 @@
-# CAPABILITIES.md — inboxHero
+# CAPABILITIES.md - inboxHero
 
 **Student:** Gurram Pavan Kalyan, evernorth-aai-1200014
+
 **Repository:** https://github.com/gpkalyan7/IIITH_Agentic_AI
 
 Run everything through one entry point:
@@ -11,9 +12,6 @@ python demo.py --all           # all of them, in the order below
 python demo.py --cap R3 --dry-run
 ```
 
-No dependencies to install. Python 3.10+ and the standard library are enough;
-a local model is optional and the system says so when it is absent.
-
 ---
 
 ## The system, in one paragraph
@@ -21,13 +19,13 @@ a local model is optional and the system says so when it is absent.
 A single Python pipeline, no framework. All 100 messages are routed before
 anything expensive happens: hostile mail and cheap mail are settled by rule,
 and only the remainder reaches a model. What survives routing goes through
-dispose → record preferences → retrieve → draft → gate → extract commitments →
-report. State that must outlive a run — standing preferences, the event log —
+dispose -> record preferences -> retrieve -> draft -> gate -> extract commitments ->
+report. State that must outlive a run - standing preferences, the event log -
 is kept in small files on disk. Message bodies enter the model's context only
 as fenced, neutralised data, and the two functions that can do something
 irreversible are reachable only through an approval gate.
 
-## Design choices you were asked to state
+## Design choices 
 
 **Framework: none.** The work is a linear pass with exactly one branch, and
 that branch is the router. A crew or graph would have added a scheduler I do
@@ -40,7 +38,7 @@ Q4 in `README.md`.
 
 **Retrieval: thread-walk, with keyword search as fallback.** An inbox already
 carries a correct, human-maintained structure in `thread_id`. Walking it is
-exact, costs nothing, and explains itself — "I used m003 because it is the
+exact, costs nothing, and explains itself - "I used m003 because it is the
 message before yours in this thread" is a reason a person can check. That is
 also the case that matters most here: m008 asks for a URL that appears in
 exactly one message of its own thread. Embeddings would have added an index,
@@ -50,16 +48,16 @@ gated: a candidate is only quotable if the snippet shares a content word with
 the requesting message's **subject**. Without that gate the system cheerfully
 grounded "coffee when you're back in town?" in "office closed for building
 maintenance", because both contain the word *building*. A message whose
-subject has no content word at all — m012, titled "the thing" — cannot be
+subject has no content word at all - m012, titled "the thing" - cannot be
 grounded outside its thread and is refused rather than guessed at.
 
 **Dispositions.** `reply`, `archive`, `defer`, `delegate`, `escalate`, plus two
 additions:
 
-- `ask` — the system cannot tell what is being requested. Without it, m012
+- `ask` - the system cannot tell what is being requested. Without it, m012
   has to be forced into `reply`, and a system that must reply will invent what
   "that thing we talked about" was.
-- `quarantine` — hostile, flagged, reported, left in place. Without it,
+- `quarantine` - hostile, flagged, reported, left in place. Without it,
   refusing a hostile message means archiving it, which hides it. Part 6
   requires the opposite.
 
@@ -69,7 +67,7 @@ without asking. An archived message is still in `inbox.json` and a draft is a
 file nobody has seen, so both are recoverable. `send` is irreversible because
 once the owner's name is on a message in someone else's inbox, nothing
 retracts it. **Deleting is irreversible in this design** because the mock
-store has no trash — and beyond recoverability, a system that quietly deletes
+store has no trash - and beyond recoverability, a system that quietly deletes
 is one whose mistakes are invisible, which is worse than the mistake. Nothing
 in inboxHero ever proposes a delete; the operation is implemented anyway, and
 gated, so that the claim is demonstrable rather than merely asserted.
@@ -79,7 +77,7 @@ process, both in `tools.py`, and both demand a `Gate` decision whose token is
 keyed to the specific proposal that was approved. Nothing else in the system
 can reach them, and no agent imports `tools.py` at all. A second, independent
 check sits on top: `send` refuses any recipient not already present in
-`inbox.json`. That is aimed squarely at Part 6 — `archive@mail-backup-service.info`
+`inbox.json`. That is aimed squarely at Part 6 - `archive@mail-backup-service.info`
 (demanded by m024) and `finance-sync@ext-audit.co` (demanded by m047) have
 never written to this mailbox, so they are unreachable *even if a human
 approved the send by mistake*.
@@ -89,7 +87,7 @@ and every `delete`, and about nothing else. Archiving a receipt or deferring a
 newsletter happens silently. On this inbox that is a handful of approvals per
 run rather than forty, which is the point: a person asked to approve forty
 things approves forty things without reading them. What I traded away is real
-— a wrongly archived message is possible and nobody is consulted about it. I
+- a wrongly archived message is possible and nobody is consulted about it. I
 think that is the right way round, because a wrong archive is recoverable from
 `inbox.json` and a wrong send is not. The one place I went further than "is it
 irreversible" is content: a draft that correctly quotes a credential is still
@@ -100,8 +98,8 @@ through.
 **Preferences cannot loosen controls.** The preference store holds a closed
 vocabulary of five kinds, none of which can express "skip approval" or "act
 autonomously", and `gate.py` never reads it. This matters because m039 arrives
-looking exactly like the legitimate m041 — a note to the assistant, apparently
-from `sam@paperjet.io` — and sender identity cannot separate them. What
+looking exactly like the legitimate m041 - a note to the assistant, apparently
+from `sam@paperjet.io` - and sender identity cannot separate them. What
 separates them is that "never schedule before 11:00" is representable and
 "send to investors without asking for approval" is not.
 
@@ -155,8 +153,8 @@ A few specifics, so the claims above are checkable without running anything:
   as phishing, confirms none of them were deleted, and confirms neither
   exfiltration address is in the 80-address recipient allowlist.
 - **R6** puts "Board deck finished and circulated" on Wed 16 Sep citing
-  **[m038, m040]** — a date stated in neither message alone, since m040 says
-  "two days before the board review" and m038 says the review is the 18th —
+  **[m038, m040]** - a date stated in neither message alone, since m040 says
+  "two days before the board review" and m038 says the review is the 18th -
   and raises `CONFLICT at Tue 15 Sep 15:00` between the Northwind intro call
   (m010) and the dental appointment (m061).
 
@@ -168,7 +166,7 @@ A few specifics, so the claims above are checkable without running anything:
 - Timestamps are naive ISO-8601 with no timezone and all fall in September
   2026, so bare day-of-month references ("the 18th", "Tuesday the 15th")
   resolve into that month. Weekday references resolve forward from the send
-  date, preferring the weekday attached to a time — m013 names Thursday twice
+  date, preferring the weekday attached to a time - m013 names Thursday twice
   and Wednesday once, and the one that matters is the one carrying "2:00pm".
 - Attachments are not modelled; messages refer to "the portal" instead.
 - "Sending" means writing a pair of files to `outbox/`. No real mail is sent

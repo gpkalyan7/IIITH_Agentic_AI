@@ -5,7 +5,7 @@ The lectures' point, applied to an inbox. Not all of this is an agent problem.
   HOSTILE   rules decide, alone. No model, because the text is adversarial.
   CHEAP     rules decide, alone. A Spotify receipt does not need reasoning,
             and paying a model to recognise one is the waste the brief warns
-            about. On this mailbox that is 52 of 100 messages.
+            about.
   WORKFLOW  a rule decides the disposition and a deterministic handler does
             the work: recording a preference, tracking a sent message.
   AGENTIC   the rest. Retrieval, drafting, scheduling against a stored
